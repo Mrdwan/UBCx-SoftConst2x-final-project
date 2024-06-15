@@ -1,17 +1,24 @@
 package query;
 
 import filters.Filter;
+import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.Layer;
+import twitter4j.Status;
+import ui.MapMarkerSimple;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
+
+import static util.Util.imageFromURL;
+import static util.Util.statusCoordinate;
 
 /**
  * A query over the twitter stream.
- * TODO: Task 4: you are to complete this class.
  */
-public class Query {
+public class Query implements Observer {
     // The map on which to display markers when the query matches
     private final JMapViewer map;
     // Each query has its own "layer" so they can be turned on and off all at once
@@ -67,7 +74,17 @@ public class Query {
      * TODO: Implement this method
      */
     public void terminate() {
+        layer.setVisible(false);
+    }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        Status status = (Status) arg;
+        if (filter.matches(status)) {
+            Coordinate coordinate = statusCoordinate(status);
+            MapMarkerSimple marker = new MapMarkerSimple(layer, coordinate);
+            map.addMapMarker(marker);
+        }
     }
 }
 

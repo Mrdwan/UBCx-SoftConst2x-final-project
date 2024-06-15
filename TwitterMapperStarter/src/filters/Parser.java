@@ -1,5 +1,8 @@
 package filters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Parse a string in the filter language and return the filter.
  * Throws a SyntaxError exception on failure.
@@ -59,10 +62,12 @@ public class Parser {
         while (token != null && token.equals(OR)) {
             scanner.advance();
             Filter right = andexpr();
-            // At this point we have two subexpressions ("sub" on the left and "right" on the right)
-            // that are to be connected by "or"
-            // TODO: Construct the appropriate new Filter object
-            // The new filter object should be assigned to the variable "sub"
+
+            List<Filter> filters = new ArrayList<Filter>();
+            filters.add(sub);
+            filters.add(right);
+
+            sub = new OrFilter(filters);
             token = scanner.peek();
         }
         return sub;
@@ -74,10 +79,12 @@ public class Parser {
         while (token != null && token.equals(AND)) {
             scanner.advance();
             Filter right = notexpr();
-            // At this point we have two subexpressions ("sub" on the left and "right" on the right)
-            // that are to be connected by "and"
-            // TODO: Construct the appropriate new Filter object
-            // The new filter object should be assigned to the variable "sub"
+
+            List<Filter> filters = new ArrayList<Filter>();
+            filters.add(sub);
+            filters.add(right);
+
+            sub = new AndFilter(filters);
             token = scanner.peek();
         }
         return sub;

@@ -11,7 +11,7 @@ public interface Filter {
     /**
      * Returns true if the filter matches the given tweet
      * @param s     the tweet to check
-     * @return      whether or not the tweet matches this filter
+     * @return      whether the tweet matches this filter
      */
     boolean matches(Status s);
 

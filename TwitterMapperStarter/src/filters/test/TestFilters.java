@@ -4,7 +4,9 @@ import filters.*;
 import org.junit.jupiter.api.Test;
 import twitter4j.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,6 +29,45 @@ public class TestFilters {
         assertFalse(f.matches(makeStatus("fred Flintstone")));
         assertTrue(f.matches(makeStatus("Red Skelton")));
         assertTrue(f.matches(makeStatus("red Skelton")));
+    }
+
+    @Test
+    public void testAnd() {
+        List<Filter> filters = new ArrayList<Filter>();
+        filters.add(new BasicFilter("Fred"));
+        filters.add(new BasicFilter("Bar"));
+
+        Filter f = new AndFilter(filters);
+
+        assertFalse(f.matches(makeStatus("Both words are not here")));
+        assertFalse(f.matches(makeStatus("Fred Flintstone")));
+        assertFalse(f.matches(makeStatus("fred Flintstone")));
+        assertFalse(f.matches(makeStatus("Bar Skelton")));
+        assertFalse(f.matches(makeStatus("bar Skelton")));
+        assertTrue(f.matches(makeStatus("Fred is a bar")));
+        assertTrue(f.matches(makeStatus("fred is a bar")));
+        assertTrue(f.matches(makeStatus("Fred is a Bar")));
+        assertTrue(f.matches(makeStatus("Fred is a Bar")));
+        assertTrue(f.matches(makeStatus("Bar is Fred for Foo")));
+    }
+
+    @Test
+    public void testOr() {
+        List<Filter> filters = new ArrayList<Filter>();
+        filters.add(new BasicFilter("Fred"));
+        filters.add(new BasicFilter("Bar"));
+
+        Filter f = new OrFilter(filters);
+
+        assertFalse(f.matches(makeStatus("Both words are not here")));
+        assertTrue(f.matches(makeStatus("fred Flintstone")));
+        assertTrue(f.matches(makeStatus("Bar Skelton")));
+        assertTrue(f.matches(makeStatus("bar Skelton")));
+        assertTrue(f.matches(makeStatus("Fred is a bar")));
+        assertTrue(f.matches(makeStatus("fred is a bar")));
+        assertTrue(f.matches(makeStatus("Fred is a Bar")));
+        assertTrue(f.matches(makeStatus("Fred is a Bar")));
+        assertTrue(f.matches(makeStatus("Bar is Fred for Foo")));
     }
 
     private Status makeStatus(String text) {
